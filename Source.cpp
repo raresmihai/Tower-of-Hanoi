@@ -6,6 +6,7 @@ using namespace std;
 class HanoiTower
 {
 private:
+	vector <int> initialState;
 	vector < vector <int> > visitedStates;
 	int towersCount;
 	int disksCount;
@@ -50,15 +51,30 @@ private:
 		it = find(visitedStates.begin(), visitedStates.end(), currentState);
 		return it == visitedStates.end();
 	}
+	bool diskIsAlreadyPlaced(vector<int> state, int currentDisk)
+	{
+		int disk = disksCount;
+		while (state[disk] == towersCount)
+		{
+			disk--;
+		}
+		return disk < currentDisk;
+	}
+	vector<int> computeInitialState()
+	{
+		vector<int> initialState(disksCount + 1, 1);
+		return initialState;
+	}
 public:
 	HanoiTower(int towersCount, int disksCount)
 	{
 		this->towersCount = towersCount;
 		this->disksCount = disksCount;
+		initialState = computeInitialState();
+		visitedStates.push_back(initialState);
 	}
 	vector<int> getInitialState()
 	{
-		vector<int> initialState(towersCount + 1, 1);
 		return initialState;
 	}
 	int getSolution()
@@ -91,5 +107,12 @@ public:
 			}
 		}
 	}
+
 };
 
+int main()
+{
+	HanoiTower hanoiTower(3, 3);
+	hanoiTower.solve(hanoiTower.getInitialState(), 0);
+	cout << hanoiTower.getSolution();
+}
