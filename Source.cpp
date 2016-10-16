@@ -310,12 +310,12 @@ public:
 
 	pair <int, int> getRandomMove(vector<int> currentState)
 	{
-		vector<pair<int,int>> availableDisks;
+		vector<pair<int, int>> availableDisks;
 		for (int i = 1; i <= disksCount; i++)
 		{
 			if (!diskIsAlreadyPlaced(currentState, i) && canMoveDisk(currentState, i))
 			{
-				availableDisks.push_back(make_pair(i, getRandomAvailableTower(currentState,i)));
+				availableDisks.push_back(make_pair(i, getRandomAvailableTower(currentState, i)));
 			}
 		}
 		int randomDiskIndex = rand() % availableDisks.size();
@@ -376,7 +376,7 @@ public:
 				tower = towersCount;
 			}
 			vector<int> nextState = getNextState(currentState, disk, tower);
-			if (canTransit(currentState, disk, tower) && isANewState(nextState) && stateIsBetter(currentState,nextState))
+			if (canTransit(currentState, disk, tower) && isANewState(nextState) && stateIsBetter(currentState, nextState))
 			{
 				visitedStates.push_back(nextState);
 				if (isAKeyState(nextState))
@@ -409,6 +409,7 @@ public:
 	int aStarSolve(vector<int> currentState){
 		visitedStates.push_back(currentState);
 		queue <pair<vector<int>, int>> Q;
+		algorithmSteps++;
 		Q.push(make_pair(currentState, 0));
 		while (!Q.empty()){
 			pair<vector<int>, int> current_pair = Q.front();
@@ -421,6 +422,7 @@ public:
 							return current_pair.second + 1;
 						}
 						if (isANewState(newState)){
+							algorithmSteps++;
 							visitedStates.push_back(newState);
 							Q.push(make_pair(newState, current_pair.second + 1));
 						}
@@ -470,7 +472,7 @@ public:
 
 int main()
 {
-	HanoiTower hanoiTower(4,5);
+	HanoiTower hanoiTower(4, 5);
 
 	cout << "BKT\n";
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
@@ -478,7 +480,7 @@ int main()
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 	auto duration = duration_cast<microseconds>(t2 - t1).count();
 	cout << duration << " ms\n";
-	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps()<<"\n\n";
+	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps() << "\n\n";
 
 	cout << "Random\n";
 	hanoiTower.initializeProblem();
@@ -496,7 +498,7 @@ int main()
 	t2 = high_resolution_clock::now();
 	duration = duration_cast<microseconds>(t2 - t1).count();
 	cout << duration << " ms\n";
-	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps()<<"\n\n";
+	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps() << "\n\n";
 
 	cout << "Hill Climbing\n";
 	hanoiTower.initializeProblem();
@@ -507,8 +509,9 @@ int main()
 	cout << duration << " ms\n";
 	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps();
 	int x;
-	cin >> x;
 
-	cout << "aStar Solve\n";
+
+	cout << "\n\naStar Solve\n";
+	hanoiTower.initializeProblem();
 	cout << hanoiTower.aStarSolve(hanoiTower.getInitialState());
 }
