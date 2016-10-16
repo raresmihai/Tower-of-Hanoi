@@ -3,9 +3,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include <cmath>
+#include <Windows.h>
 #include <algorithm>
 #include <queue>
+#include <chrono>
 using namespace std;
+using namespace std::chrono;
 
 class HanoiTower
 {
@@ -22,6 +25,9 @@ private:
 	int algorithmSteps;
 	int lastDiskMoved;
 	int lastKeyStateIndex;
+	int negativeMoves;
+	int maxNegativeMoves;
+
 	int minim(int x, int y)
 	{
 		return x < y ? x : y;
@@ -167,6 +173,8 @@ public:
 		algorithmSteps = 0;
 		lastKeyStateIndex = 0;
 		lastDiskMoved = 0;
+		negativeMoves = 0;
+		maxNegativeMoves = disksCount - towersCount + 1;
 	}
 	int getAlgorithmSteps()
 	{
@@ -183,7 +191,7 @@ public:
 		if (canMoveDisk(state, disk)) return disk;
 		return -1;
 	}
-	void randomSolve(vector<int> currentState)
+	void efficientRandomSolve(vector<int> currentState)
 	{
 		if (!isFinalState(currentState) && algorithmSteps < maximumNumberOfMoves)
 		{
@@ -203,7 +211,7 @@ public:
 					lastKeyStateIndex = visitedStates.size() - 1;
 				}
 				algorithmSteps++;
-				randomSolve(nextState);
+				efficientRandomSolve(nextState);
 			}
 			else
 			{
@@ -213,7 +221,7 @@ public:
 					visitedStates.erase(visitedStates.begin() + lastKeyStateIndex + 1, visitedStates.end());
 				}
 				algorithmSteps++;
-				randomSolve(visitedStates[visitedStates.size() - 1]);
+				efficientRandomSolve(visitedStates[visitedStates.size() - 1]);
 			}
 		}
 		else
@@ -274,93 +282,129 @@ public:
 
 	}
 
-	int hillFunction(vector<int> currentState, int disksCount, int towersCount){
-		int sum = 0;
-		for (int i = 1; i <= disksCount; ++i){
-			if (currentState[i] > 1){
-				if (currentState[i == towersCount]){
-					sum += i*currentState[i];
-				}
-				else{
-					sum += currentState[i];
-				}
-			}
-		}
-		return sum;
-	}
-
-	bool canBeUsed(vector<int> current_state){
-		int i, j;
-		for (i = 0; i < notToVisitStates.size(); ++i){
-			for (j = 1; j < notToVisitStates[i].size(); ++j){
-				if (notToVisitStates[i][j] != current_state[j]){
-					break;
-				}
-			}
-			if (j == notToVisitStates[i].size()){
+	bool canMoveDiskToTower(vector<int> state, int disk, int tower)
+	{
+		for (int i = 1; i < disk; i++)
+		{
+			if (state[i] == tower)
+			{
 				return false;
 			}
 		}
 		return true;
 	}
 
-
-	vector<int> bestHillState(vector<int> currentState, int disksCount, int towersCount){
-		int currentValueState = hillFunction(currentState, disksCount, towersCount);
-		vector<int> bestState;
-		int bestValueState = -1;
-		for (int disk = 1; disk <= disksCount; ++disk){
-			for (int tower = 1; tower <= towersCount; ++tower){
-				if (!diskIsAlreadyPlaced(currentState, disk) && canTransit(currentState, disk, tower)){
-					vector <int> newState = getNextState(currentState, disk, tower);
-					if (canBeUsed(newState)){
-						int newValueState = hillFunction(newState, disksCount, towersCount);
-						if (newValueState > bestValueState){
-							bestValueState = newValueState;
-							bestState = newState;
-						}
-					}
-				}
+	int getRandomAvailableTower(vector<int> state, int disk)
+	{
+		vector<int> avaiableTowers;
+		for (int t = 1; t <= towersCount; t++)
+		{
+			if (canMoveDiskToTower(state, disk, t))
+			{
+				avaiableTowers.push_back(t);
 			}
 		}
-		if (currentValueState > bestValueState){
-			bestState[0] = -1;
-		}
-		else{
-			bestState[0] = 1;
-		}
-		return bestState;
+		int randomTowerIndex = rand() % avaiableTowers.size();
+		return avaiableTowers[randomTowerIndex];
 	}
 
-	void hillClimbingSolve(vector<int> currentState){
-		bool negative_transition = false;
-		visitedStates.push_back(currentState);
-		while (!isFinalState(currentState)){
-			vector<int> bestNextState = bestHillState(currentState, disksCount, towersCount);
-			for (int i = 0; i < currentState.size(); ++i){
-				cout << bestNextState[i] << " ";
-			}
-			cout << "\n";
-			if (bestNextState[0] < 0){
-				if (negative_transition){
-					notToVisitStates.push_back(bestNextState);
-					visitedStates.pop_back();
-					currentState = visitedStates[visitedStates.size() - 1];
-					negative_transition = false;
-				}
-				else{
-					negative_transition = true;
-					visitedStates.pop_back();
-					currentState = bestNextState;
-				}
-			}
-			else{
-				negative_transition = false;
-				visitedStates.push_back(bestNextState);
-				currentState = bestNextState;
+	pair <int, int> getRandomMove(vector<int> currentState)
+	{
+		vector<pair<int,int>> availableDisks;
+		for (int i = 1; i <= disksCount; i++)
+		{
+			if (!diskIsAlreadyPlaced(currentState, i) && canMoveDisk(currentState, i))
+			{
+				availableDisks.push_back(make_pair(i, getRandomAvailableTower(currentState,i)));
 			}
 		}
-		cout << "I',done";
+		int randomDiskIndex = rand() % availableDisks.size();
+		return availableDisks[randomDiskIndex];
+	}
+
+	int getScore(vector<int> state)
+	{
+		int score = 0;
+		for (int i = 1; i <= disksCount; i++)
+		{
+			if (diskIsAlreadyPlaced(state, i))
+			{
+				score += (i * 3);
+			}
+			else
+			{
+				if (canMoveDiskToTower(state, i, towersCount))
+				{
+					score += (i * 2);
+				}
+				else
+				{
+					score += state[i];
+				}
+			}
+		}
+		return score;
+	}
+
+	bool stateIsBetter(vector<int> currentState, vector<int> nextState)
+	{
+		int currentStateScore = getScore(currentState);
+		int nextStateScore = getScore(nextState);
+		if (currentStateScore <= nextStateScore)
+		{
+			negativeMoves = 0;
+			return true;
+		}
+		if (negativeMoves < maxNegativeMoves)
+		{
+			negativeMoves++;
+			return true;
+		}
+		return false;
+	}
+
+	void hillClimbingSolve(vector<int> currentState)
+	{
+		if (!isFinalState(currentState) && algorithmSteps < maximumNumberOfMoves)
+		{
+			pair<int, int> randomMove = getRandomMove(currentState);
+			int disk = randomMove.first;
+			int tower = randomMove.second;
+			if (canMoveToLastDisk(currentState) > 0)
+			{
+				disk = canMoveToLastDisk(currentState);
+				tower = towersCount;
+			}
+			vector<int> nextState = getNextState(currentState, disk, tower);
+			if (canTransit(currentState, disk, tower) && isANewState(nextState) && stateIsBetter(currentState,nextState))
+			{
+				visitedStates.push_back(nextState);
+				if (isAKeyState(nextState))
+				{
+					lastKeyStateIndex = visitedStates.size() - 1;
+				}
+				algorithmSteps++;
+				hillClimbingSolve(nextState);
+			}
+			else
+			{
+
+				if (lastKeyStateIndex > 0)
+				{
+					visitedStates.erase(visitedStates.begin() + lastKeyStateIndex + 1, visitedStates.end());
+				}
+				algorithmSteps++;
+				hillClimbingSolve(visitedStates[visitedStates.size() - 1]);
+			}
+		}
+		else
+		{
+			if (isFinalState(currentState))
+			{
+				minimumNumberOfMoves = visitedStates.size();
+				solutionFound = true;
+			}
+		}
 	}
 	int aStarSolve(vector<int> currentState){
 		visitedStates.push_back(currentState);
@@ -387,18 +431,84 @@ public:
 		}
 	}
 
+	void randomSolve(vector<int> currentState)
+	{
+		if (!isFinalState(currentState) && algorithmSteps < maximumNumberOfMoves)
+		{
+			int disk = rand() % disksCount + 1;
+			int tower = rand() % towersCount + 1;
+			if (canMoveToLastDisk(currentState) > 0)
+			{
+				disk = canMoveToLastDisk(currentState);
+				tower = towersCount;
+			}
+			vector<int> nextState = getNextState(currentState, disk, tower);
+			if (canTransit(currentState, disk, tower))
+			{
+				visitedStates.push_back(nextState);
+				algorithmSteps++;
+				randomSolve(nextState);
+			}
+			else
+			{
+				int statesToGoBack = rand() % visitedStates.size();
+				visitedStates.erase(visitedStates.begin() + statesToGoBack + 1, visitedStates.end());
+				algorithmSteps++;
+				randomSolve(visitedStates[visitedStates.size() - 1]);
+			}
+		}
+		else
+		{
+			if (isFinalState(currentState))
+			{
+				minimumNumberOfMoves = visitedStates.size();
+				solutionFound = true;
+			}
+		}
+	}
 };
 
 int main()
 {
-	HanoiTower hanoiTower(3, 3);
-	/*hanoiTower.bktSolve(hanoiTower.getInitialState());
-	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps()<<"\n";
+	HanoiTower hanoiTower(4,5);
+
+	cout << "BKT\n";
+	high_resolution_clock::time_point t1 = high_resolution_clock::now();
+	hanoiTower.bktSolve(hanoiTower.getInitialState());
+	high_resolution_clock::time_point t2 = high_resolution_clock::now();
+	auto duration = duration_cast<microseconds>(t2 - t1).count();
+	cout << duration << " ms\n";
+	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps()<<"\n\n";
+
+	cout << "Random\n";
 	hanoiTower.initializeProblem();
+	t1 = high_resolution_clock::now();
 	hanoiTower.randomSolve(hanoiTower.getInitialState());
+	t2 = high_resolution_clock::now();
+	duration = duration_cast<microseconds>(t2 - t1).count();
+	cout << duration << " ms\n";
+	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps() << "\n\n";
+
+	cout << "Efficient Random\n";
+	hanoiTower.initializeProblem();
+	t1 = high_resolution_clock::now();
+	hanoiTower.efficientRandomSolve(hanoiTower.getInitialState());
+	t2 = high_resolution_clock::now();
+	duration = duration_cast<microseconds>(t2 - t1).count();
+	cout << duration << " ms\n";
+	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps()<<"\n\n";
+
+	cout << "Hill Climbing\n";
+	hanoiTower.initializeProblem();
+	t1 = high_resolution_clock::now();
+	hanoiTower.hillClimbingSolve(hanoiTower.getInitialState());
+	t2 = high_resolution_clock::now();
+	duration = duration_cast<microseconds>(t2 - t1).count();
+	cout << duration << " ms\n";
 	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps();
 	int x;
 	cin >> x;
-	*/
+
+	cout << "aStar Solve\n";
 	cout << hanoiTower.aStarSolve(hanoiTower.getInitialState());
 }
