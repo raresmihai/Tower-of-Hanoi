@@ -4,6 +4,7 @@
 #include <time.h>
 #include <cmath>
 #include <algorithm>
+#include <queue>
 using namespace std;
 
 class HanoiTower
@@ -361,6 +362,30 @@ public:
 		}
 		cout << "I',done";
 	}
+	int aStarSolve(vector<int> currentState){
+		visitedStates.push_back(currentState);
+		queue <pair<vector<int>, int>> Q;
+		Q.push(make_pair(currentState, 0));
+		while (!Q.empty()){
+			pair<vector<int>, int> current_pair = Q.front();
+			Q.pop();
+			for (int disk = 1; disk <= disksCount; ++disk){
+				for (int tower = 1; tower <= towersCount; ++tower){
+					if (!diskIsAlreadyPlaced(current_pair.first, disk) && canTransit(current_pair.first, disk, tower)){
+						vector <int> newState = getNextState(current_pair.first, disk, tower);
+						if (isFinalState(newState)){
+							return current_pair.second + 1;
+						}
+						if (isANewState(newState)){
+							visitedStates.push_back(newState);
+							Q.push(make_pair(newState, current_pair.second + 1));
+						}
+
+					}
+				}
+			}
+		}
+	}
 
 };
 
@@ -375,5 +400,5 @@ int main()
 	int x;
 	cin >> x;
 	*/
-	hanoiTower.hillClimbingSolve(hanoiTower.getInitialState());
+	cout << hanoiTower.aStarSolve(hanoiTower.getInitialState());
 }
