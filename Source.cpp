@@ -658,7 +658,7 @@ void createStatistic()
 
 int main()
 {
-	/*
+	
 	HanoiTower hanoiTower(4,4);
 
 	cout << "BKT\n";
@@ -706,6 +706,6 @@ int main()
 	cout << duration << " ms\n";
 	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps();
 	int x;
-	cin >> x;*/
-	createStatistic();
+	cin >> x;
+	//createStatistic();
 }
