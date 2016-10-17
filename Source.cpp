@@ -655,7 +655,17 @@ void createStatistic()
 		}
 	}
 }
-
+void printSolutionMessage(HanoiTower hanoiTower)
+{
+	if (hanoiTower.getSolution() == -1)
+	{
+		cout << "Solution not found in 1024 algorithm steps\n\n";
+	}
+	else
+	{
+		cout << hanoiTower.getSolution() << " moves in " << hanoiTower.getAlgorithmSteps() << " algorithm steps\n\n";
+	}
+}
 int main()
 {
 	
@@ -666,8 +676,8 @@ int main()
 	hanoiTower.bktSolve(hanoiTower.getInitialState());
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 	auto duration = duration_cast<microseconds>(t2 - t1).count();
-	cout << duration << " ms\n";
-	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps()<<"\n\n";
+	cout << duration/1000 << " ms\n";
+	printSolutionMessage(hanoiTower);
 
 	cout << "Random\n";
 	hanoiTower.initializeProblem();
@@ -675,8 +685,8 @@ int main()
 	hanoiTower.randomSolve(hanoiTower.getInitialState());
 	t2 = high_resolution_clock::now();
 	duration = duration_cast<microseconds>(t2 - t1).count();
-	cout << duration << " ms\n";
-	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps() << "\n\n";
+	cout << duration/1000 << " ms\n";
+	printSolutionMessage(hanoiTower);
 
 	cout << "Efficient Random\n";
 	hanoiTower.initializeProblem();
@@ -684,8 +694,8 @@ int main()
 	hanoiTower.efficientRandomSolve(hanoiTower.getInitialState());
 	t2 = high_resolution_clock::now();
 	duration = duration_cast<microseconds>(t2 - t1).count();
-	cout << duration << " ms\n";
-	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps()<<"\n\n";
+	cout << duration/1000 << " ms\n";
+	printSolutionMessage(hanoiTower);
 
 	cout << "Hill Climbing\n";
 	hanoiTower.initializeProblem();
@@ -693,8 +703,8 @@ int main()
 	hanoiTower.hillClimbingSolve(hanoiTower.getInitialState());
 	t2 = high_resolution_clock::now();
 	duration = duration_cast<microseconds>(t2 - t1).count();
-	cout << duration << " ms\n";
-	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps()<<"\n\n";
+	cout << duration/1000 << " ms\n";
+	printSolutionMessage(hanoiTower);
 
 
 	cout << "A star\n";
@@ -703,8 +713,8 @@ int main()
 	hanoiTower.aStarSolve(hanoiTower.getInitialState());
 	t2 = high_resolution_clock::now();
 	duration = duration_cast<microseconds>(t2 - t1).count();
-	cout << duration << " ms\n";
-	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps();
+	cout << duration/1000 << " ms\n";
+	printSolutionMessage(hanoiTower);
 	int x;
 	cin >> x;
 	//createStatistic();
