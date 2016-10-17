@@ -1,0 +1,118 @@
+4 TOWERS
+-----------------------------------
+3 DISKS
+~~Backtracking~~
+Solution not found: 0 times
+Average solution steps: 5
+Average algorithm steps: 5
+Average duration: 578 microseconds
+
+
+~~Random~~
+Solution not found: 0 times
+Average solution steps: 6
+Average algorithm steps: 35
+Average duration: 1911 microseconds
+
+
+~~Efficient Random~~
+Solution not found: 0 times
+Average solution steps: 14
+Average algorithm steps: 22
+Average duration: 4235 microseconds
+
+
+~~Hill climbing~~
+Solution not found: 0 times
+Average solution steps: 7
+Average algorithm steps: 8
+Average duration: 3875 microseconds
+
+
+4 DISKS
+~~Backtracking~~
+Solution not found: 0 times
+Average solution steps: 11
+Average algorithm steps: 11
+Average duration: 2084 microseconds
+
+
+~~Random~~
+Solution not found: 5 times
+Average solution steps: 0
+Average algorithm steps: 0
+Average duration: 0 microseconds
+
+
+~~Efficient Random~~
+Solution not found: 0 times
+Average solution steps: 11
+Average algorithm steps: 24
+Average duration: 4026 microseconds
+
+
+~~Hill climbing~~
+Solution not found: 0 times
+Average solution steps: 14
+Average algorithm steps: 21
+Average duration: 8204 microseconds
+
+
+5 DISKS
+~~Backtracking~~
+Solution not found: 0 times
+Average solution steps: 25
+Average algorithm steps: 25
+Average duration: 4587 microseconds
+
+
+~~Random~~
+Solution not found: 5 times
+Average solution steps: 0
+Average algorithm steps: 0
+Average duration: 0 microseconds
+
+
+~~Efficient Random~~
+Solution not found: 0 times
+Average solution steps: 29
+Average algorithm steps: 56
+Average duration: 11803 microseconds
+
+
+~~Hill climbing~~
+Solution not found: 0 times
+Average solution steps: 37
+Average algorithm steps: 102
+Average duration: 44270 microseconds
+
+
+6 DISKS
+~~Backtracking~~
+Solution not found: 0 times
+Average solution steps: 67
+Average algorithm steps: 67
+Average duration: 21856 microseconds
+
+
+~~Random~~
+Solution not found: 5 times
+Average solution steps: 0
+Average algorithm steps: 0
+Average duration: 0 microseconds
+
+
+~~Efficient Random~~
+Solution not found: 0 times
+Average solution steps: 94
+Average algorithm steps: 447
+Average duration: 151763 microseconds
+
+
+~~Hill climbing~~
+Solution not found: 2 times
+Average solution steps: 57
+Average algorithm steps: 650
+Average duration: 361707 microseconds
+
+

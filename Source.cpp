@@ -5,7 +5,9 @@
 #include <cmath>
 #include <Windows.h>
 #include <algorithm>
+#include <fstream>
 #include <chrono>
+#include <string>
 using namespace std;
 using namespace std::chrono;
 
@@ -26,6 +28,9 @@ private:
 	int lastKeyStateIndex;
 	int negativeMoves;
 	int maxNegativeMoves;
+	long duration;
+	high_resolution_clock::time_point t0;
+	high_resolution_clock::time_point tf;
 
 	int minim(int x, int y)
 	{
@@ -156,6 +161,7 @@ public:
 	}
 	int getSolution()
 	{
+		tf = high_resolution_clock::now();
 		if (solutionFound) return minimumNumberOfMoves;
 		return -1;
 	}
@@ -174,6 +180,7 @@ public:
 		lastDiskMoved = 0;
 		negativeMoves = 0;
 		maxNegativeMoves = disksCount - towersCount + 1;
+		t0 = high_resolution_clock::now();
 	}
 	int getAlgorithmSteps()
 	{
@@ -441,10 +448,156 @@ public:
 			}
 		}
 	}
+
+	long getDuration()
+	{
+		return duration_cast<microseconds>(tf - t0).count();
+	}
 };
+
+void createStatistic()
+{
+	for (int tower = 3; tower <= 4; tower++)
+	{
+		//cout << tower;
+		string fileName = to_string(tower) + "towers.txt";
+		cout << fileName;
+		ofstream g(fileName);
+		g << tower << " TOWERS\n";
+		g << "-----------------------------------\n";
+		for (int disk = tower - 1; disk <= tower + 2; disk++)
+		{
+			g << disk << " DISKS\n";
+			HanoiTower hanoiTower(tower, disk);
+			int averagesolutionSteps; 
+			int averagealgorithmSteps;
+			int averagesolutionNotFound;
+			long averageduration;
+
+			//BKT
+			g << "~~Backtracking~~\n";
+			averagesolutionSteps = 0;
+			averagealgorithmSteps = 0;
+			averagesolutionNotFound = 0;
+			averageduration = 0;
+			for (int count = 1; count <= 100; count++)
+			{
+				hanoiTower.initializeProblem();
+				hanoiTower.bktSolve(hanoiTower.getInitialState());
+				if (hanoiTower.getSolution() > 0)
+				{
+					averagesolutionSteps += hanoiTower.getSolution();
+					averagealgorithmSteps += hanoiTower.getAlgorithmSteps();
+					averageduration += hanoiTower.getDuration();
+				}
+				else
+				{
+					averagesolutionNotFound++;
+				}
+			}
+			averagealgorithmSteps /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
+			averageduration /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
+			averagesolutionSteps /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
+			g << "Solution not found: " << averagesolutionNotFound << " times\n";
+			g << "Average solution steps: " << averagesolutionSteps << "\n";
+			g << "Average algorithm steps: " << averagealgorithmSteps << "\n";
+			g << "Average duration: " << averageduration << " microseconds\n\n\n";
+
+
+
+			////Random
+			g << "~~Random~~\n";
+			averagesolutionSteps = 0;
+			averagealgorithmSteps = 0;
+			averagesolutionNotFound = 0;
+			averageduration = 0;
+			for (int count = 1; count <= 100; count++)
+			{
+				hanoiTower.initializeProblem();
+				hanoiTower.randomSolve(hanoiTower.getInitialState());
+				if (hanoiTower.getSolution() > 0)
+				{
+					averagesolutionSteps += hanoiTower.getSolution();
+					averagealgorithmSteps += hanoiTower.getAlgorithmSteps();
+					averageduration += hanoiTower.getDuration();
+				}
+				else
+				{
+					averagesolutionNotFound++;
+				}
+			}
+			averagealgorithmSteps /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
+			averageduration /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
+			averagesolutionSteps /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
+			g << "Solution not found: " << averagesolutionNotFound << " times\n";
+			g << "Average solution steps: " << averagesolutionSteps << "\n";
+			g << "Average algorithm steps: " << averagealgorithmSteps << "\n";
+			g << "Average duration: " << averageduration << " microseconds\n\n\n";
+
+			//Efficient random
+			g << "~~Efficient Random~~\n";
+			averagesolutionSteps = 0;
+			averagealgorithmSteps = 0;
+			averagesolutionNotFound = 0;
+			averageduration = 0;
+			for (int count = 1; count <= 100; count++)
+			{
+				hanoiTower.initializeProblem();
+				hanoiTower.efficientRandomSolve(hanoiTower.getInitialState());
+				if (hanoiTower.getSolution() > 0)
+				{
+					averagesolutionSteps += hanoiTower.getSolution();
+					averagealgorithmSteps += hanoiTower.getAlgorithmSteps();
+					averageduration += hanoiTower.getDuration();
+				}
+				else
+				{
+					averagesolutionNotFound++;
+				}
+			}
+			averagealgorithmSteps /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
+			averageduration /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
+			averagesolutionSteps /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
+			g << "Solution not found: " << averagesolutionNotFound << " times\n";
+			g << "Average solution steps: " << averagesolutionSteps << "\n";
+			g << "Average algorithm steps: " << averagealgorithmSteps << "\n";
+			g << "Average duration: " << averageduration << " microseconds\n\n\n";
+
+			//Hill Climbing
+			g << "~~Hill climbing~~\n";
+			averagesolutionSteps = 0;
+			averagealgorithmSteps = 0;
+			averagesolutionNotFound = 0;
+			averageduration = 0;
+			for (int count = 1; count <= 100; count++)
+			{
+				hanoiTower.initializeProblem();
+				hanoiTower.hillClimbingSolve(hanoiTower.getInitialState());
+				if (hanoiTower.getSolution() > 0)
+				{
+					averagesolutionSteps += hanoiTower.getSolution();
+					averagealgorithmSteps += hanoiTower.getAlgorithmSteps();
+					averageduration += hanoiTower.getDuration();
+				}
+				else
+				{
+					averagesolutionNotFound++;
+				}
+			}
+			averagealgorithmSteps /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
+			averageduration /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
+			averagesolutionSteps /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
+			g << "Solution not found: " << averagesolutionNotFound << " times\n";
+			g << "Average solution steps: " << averagesolutionSteps << "\n";
+			g << "Average algorithm steps: " << averagealgorithmSteps << "\n";
+			g << "Average duration: " << averageduration << " microseconds\n\n\n";
+		}
+	}
+}
 
 int main()
 {
+	/*
 	HanoiTower hanoiTower(4,5);
 
 	cout << "BKT\n";
@@ -482,5 +635,6 @@ int main()
 	cout << duration << " ms\n";
 	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps();
 	int x;
-	cin >> x;
+	cin >> x;*/
+	createStatistic();
 }

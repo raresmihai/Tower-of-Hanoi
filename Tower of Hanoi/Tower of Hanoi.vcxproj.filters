@@ -19,4 +19,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="statistic.txt" />
+    <Text Include="3towers.txt" />
+    <Text Include="4towers.txt" />
+  </ItemGroup>
 </Project>
