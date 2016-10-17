@@ -5,9 +5,10 @@
 #include <cmath>
 #include <Windows.h>
 #include <algorithm>
+#include <queue>
 #include <fstream>
-#include <chrono>
 #include <string>
+#include <chrono>
 using namespace std;
 using namespace std::chrono;
 
@@ -316,12 +317,12 @@ public:
 
 	pair <int, int> getRandomMove(vector<int> currentState)
 	{
-		vector<pair<int,int>> availableDisks;
+		vector<pair<int, int>> availableDisks;
 		for (int i = 1; i <= disksCount; i++)
 		{
 			if (!diskIsAlreadyPlaced(currentState, i) && canMoveDisk(currentState, i))
 			{
-				availableDisks.push_back(make_pair(i, getRandomAvailableTower(currentState,i)));
+				availableDisks.push_back(make_pair(i, getRandomAvailableTower(currentState, i)));
 			}
 		}
 		int randomDiskIndex = rand() % availableDisks.size();
@@ -382,7 +383,7 @@ public:
 				tower = towersCount;
 			}
 			vector<int> nextState = getNextState(currentState, disk, tower);
-			if (canTransit(currentState, disk, tower) && isANewState(nextState) && stateIsBetter(currentState,nextState))
+			if (canTransit(currentState, disk, tower) && isANewState(nextState) && stateIsBetter(currentState, nextState))
 			{
 				visitedStates.push_back(nextState);
 				if (isAKeyState(nextState))
@@ -409,6 +410,34 @@ public:
 			{
 				minimumNumberOfMoves = visitedStates.size();
 				solutionFound = true;
+			}
+		}
+	}
+	int aStarSolve(vector<int> currentState){
+		visitedStates.push_back(currentState);
+		queue <pair<vector<int>, int>> Q;
+		algorithmSteps++;
+		Q.push(make_pair(currentState, 0));
+		while (!Q.empty()){
+			pair<vector<int>, int> current_pair = Q.front();
+			Q.pop();
+			for (int disk = 1; disk <= disksCount; ++disk){
+				for (int tower = 1; tower <= towersCount; ++tower){
+					if (!diskIsAlreadyPlaced(current_pair.first, disk) && canTransit(current_pair.first, disk, tower)){
+						vector <int> newState = getNextState(current_pair.first, disk, tower);
+						if (isFinalState(newState)){
+							minimumNumberOfMoves = current_pair.second + 1;
+							solutionFound = true;
+							return current_pair.second + 1;
+						}
+						if (isANewState(newState)){
+							algorithmSteps++;
+							visitedStates.push_back(newState);
+							Q.push(make_pair(newState, current_pair.second + 1));
+						}
+
+					}
+				}
 			}
 		}
 	}
@@ -448,7 +477,6 @@ public:
 			}
 		}
 	}
-
 	long getDuration()
 	{
 		return duration_cast<microseconds>(tf - t0).count();
@@ -457,10 +485,10 @@ public:
 
 void createStatistic()
 {
-	for (int tower = 3; tower <= 4; tower++)
+	for (int tower = 3; tower <= 10; tower++)
 	{
 		//cout << tower;
-		string fileName = to_string(tower) + "towers.txt";
+		string fileName = "Statistic/" + to_string(tower) + "towers.txt";
 		cout << fileName;
 		ofstream g(fileName);
 		g << tower << " TOWERS\n";
@@ -469,7 +497,7 @@ void createStatistic()
 		{
 			g << disk << " DISKS\n";
 			HanoiTower hanoiTower(tower, disk);
-			int averagesolutionSteps; 
+			int averagesolutionSteps;
 			int averagealgorithmSteps;
 			int averagesolutionNotFound;
 			long averageduration;
@@ -480,7 +508,7 @@ void createStatistic()
 			averagealgorithmSteps = 0;
 			averagesolutionNotFound = 0;
 			averageduration = 0;
-			for (int count = 1; count <= 100; count++)
+			for (int count = 1; count <= 1; count++)
 			{
 				hanoiTower.initializeProblem();
 				hanoiTower.bktSolve(hanoiTower.getInitialState());
@@ -495,9 +523,9 @@ void createStatistic()
 					averagesolutionNotFound++;
 				}
 			}
-			averagealgorithmSteps /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
-			averageduration /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
-			averagesolutionSteps /= (100 - averagesolutionNotFound > 0 ? 100 - averagesolutionNotFound : 1);
+			averagealgorithmSteps /= (1 - averagesolutionNotFound > 0 ? 1 - averagesolutionNotFound : 1);
+			averageduration /= (1 - averagesolutionNotFound > 0 ? 1 - averagesolutionNotFound : 1);
+			averagesolutionSteps /= (1 - averagesolutionNotFound > 0 ? 1 - averagesolutionNotFound : 1);
 			g << "Solution not found: " << averagesolutionNotFound << " times\n";
 			g << "Average solution steps: " << averagesolutionSteps << "\n";
 			g << "Average algorithm steps: " << averagealgorithmSteps << "\n";
@@ -591,6 +619,39 @@ void createStatistic()
 			g << "Average solution steps: " << averagesolutionSteps << "\n";
 			g << "Average algorithm steps: " << averagealgorithmSteps << "\n";
 			g << "Average duration: " << averageduration << " microseconds\n\n\n";
+
+			//A STAR
+
+			g << "~~A star*~~\n";
+			averagesolutionSteps = 0;
+			averagealgorithmSteps = 0;
+			averagesolutionNotFound = 0;
+			averageduration = 0;
+			for (int count = 1; count <= 1; count++)
+			{
+				cout << "\n" << disk;
+				hanoiTower.initializeProblem();
+				hanoiTower.aStarSolve(hanoiTower.getInitialState());
+				if (hanoiTower.getSolution() > 0)
+				{
+					averagesolutionSteps += hanoiTower.getSolution();
+					averagealgorithmSteps += hanoiTower.getAlgorithmSteps();
+					averageduration += hanoiTower.getDuration();
+				}
+				else
+				{
+					averagesolutionNotFound++;
+				}
+			}
+			averagealgorithmSteps /= (1 - averagesolutionNotFound > 0 ? 1 - averagesolutionNotFound : 1);
+			averageduration /= (1 - averagesolutionNotFound > 0 ? 1 - averagesolutionNotFound : 1);
+			averagesolutionSteps /= (1 - averagesolutionNotFound > 0 ? 1 - averagesolutionNotFound : 1);
+			g << "Solution not found: " << averagesolutionNotFound << " times\n";
+			g << "Average solution steps: " << averagesolutionSteps << "\n";
+			g << "Average algorithm steps: " << averagealgorithmSteps << "\n";
+			g << "Average duration: " << averageduration << " microseconds\n\n\n";
+
+
 		}
 	}
 }
@@ -598,7 +659,7 @@ void createStatistic()
 int main()
 {
 	/*
-	HanoiTower hanoiTower(4,5);
+	HanoiTower hanoiTower(4,4);
 
 	cout << "BKT\n";
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
@@ -630,6 +691,16 @@ int main()
 	hanoiTower.initializeProblem();
 	t1 = high_resolution_clock::now();
 	hanoiTower.hillClimbingSolve(hanoiTower.getInitialState());
+	t2 = high_resolution_clock::now();
+	duration = duration_cast<microseconds>(t2 - t1).count();
+	cout << duration << " ms\n";
+	cout << hanoiTower.getSolution() << " " << hanoiTower.getAlgorithmSteps()<<"\n\n";
+
+
+	cout << "A star\n";
+	hanoiTower.initializeProblem();
+	t1 = high_resolution_clock::now();
+	hanoiTower.aStarSolve(hanoiTower.getInitialState());
 	t2 = high_resolution_clock::now();
 	duration = duration_cast<microseconds>(t2 - t1).count();
 	cout << duration << " ms\n";

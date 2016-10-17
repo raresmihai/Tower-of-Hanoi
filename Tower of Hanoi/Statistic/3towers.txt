@@ -1,0 +1,146 @@
+3 TOWERS
+-----------------------------------
+2 DISKS
+~~Backtracking~~
+Solution not found: 0 times
+Average solution steps: 3
+Average algorithm steps: 3
+Average duration: 1577 microseconds
+
+
+~~Random~~
+Solution not found: 0 times
+Average solution steps: 5
+Average algorithm steps: 9
+Average duration: 957 microseconds
+
+
+~~Efficient Random~~
+Solution not found: 0 times
+Average solution steps: 4
+Average algorithm steps: 5
+Average duration: 772 microseconds
+
+
+~~Hill climbing~~
+Solution not found: 0 times
+Average solution steps: 4
+Average algorithm steps: 4
+Average duration: 1269 microseconds
+
+
+~~A star*~~
+Solution not found: 0 times
+Average solution steps: 3
+Average algorithm steps: 6
+Average duration: 1229 microseconds
+
+
+3 DISKS
+~~Backtracking~~
+Solution not found: 0 times
+Average solution steps: 9
+Average algorithm steps: 9
+Average duration: 1532 microseconds
+
+
+~~Random~~
+Solution not found: 43 times
+Average solution steps: 8
+Average algorithm steps: 491
+Average duration: 27.22 milliseconds
+
+
+~~Efficient Random~~
+Solution not found: 9 times
+Average solution steps: 11
+Average algorithm steps: 23
+Average duration: 3.079 milliseconds
+
+
+~~Hill climbing~~
+Solution not found: 0 times
+Average solution steps: 10
+Average algorithm steps: 21
+Average duration: 5.341 milliseconds
+
+
+~~A star*~~
+Solution not found: 0 times
+Average solution steps: 7
+Average algorithm steps: 24
+Average duration: 7.374 milliseconds
+
+
+4 DISKS
+~~Backtracking~~
+Solution not found: 0 times
+Average solution steps: 27
+Average algorithm steps: 27
+Average duration: 4.876 milliseconds
+
+
+~~Random~~
+Solution not found: 100 times
+Average solution steps: 0
+Average algorithm steps: 0
+Average duration: 0 microseconds
+
+
+~~Efficient Random~~
+Solution not found: 15 times
+Average solution steps: 33
+Average algorithm steps: 129
+Average duration: 22.526 milliseconds
+
+
+~~Hill climbing~~
+Solution not found: 31 times
+Average solution steps: 28
+Average algorithm steps: 270
+Average duration: 85.615 milliseconds
+
+
+~~A star*~~
+Solution not found: 0 times
+Average solution steps: 15
+Average algorithm steps: 70
+Average duration: 51.817 milliseconds
+
+
+5 DISKS
+~~Backtracking~~
+Solution not found: 0 times
+Average solution steps: 81
+Average algorithm steps: 81
+Average duration: 29.155 microseconds
+
+
+~~Random~~
+Solution not found: 100 times
+Average solution steps: 0
+Average algorithm steps: 0
+Average duration: 0 microseconds
+
+
+~~Efficient Random~~
+Solution not found: 100 times
+Average solution steps: 0
+Average algorithm steps: 0
+Average duration: 0 microseconds
+
+
+~~Hill climbing~~
+Solution not found: 100 times
+Average solution steps: 0
+Average algorithm steps: 0
+Average duration: 0 microseconds
+
+
+~~A star*~~
+Solution not found: 0 times
+Average solution steps: 31
+Average algorithm steps: 232
+Average duration: 497 milliseconds
+
+

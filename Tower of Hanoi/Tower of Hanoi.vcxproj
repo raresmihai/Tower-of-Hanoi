@@ -115,6 +115,10 @@
   <ItemGroup>
     <Text Include="3towers.txt" />
     <Text Include="4towers.txt" />
+    <Text Include="5towers.txt" />
+    <Text Include="6towers.txt" />
+    <Text Include="7towers.txt" />
+    <Text Include="8towers.txt" />
     <Text Include="statistic.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
